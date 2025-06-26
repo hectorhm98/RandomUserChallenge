@@ -8,7 +8,6 @@ import Foundation
 
 struct RandomUserDTO: Codable {
     let name: NameDTO
-    let surname: String
     let email: String
     let picture: PictureDTO
     let phone: String

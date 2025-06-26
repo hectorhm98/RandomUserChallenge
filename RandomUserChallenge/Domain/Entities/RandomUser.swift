@@ -13,7 +13,6 @@ enum Gender: String {
 }
 
 struct RandomUser {
-    let index: Int
     let name: String
     let surname: String
     let email: String

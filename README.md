@@ -35,7 +35,9 @@ This iOS application, built with SwiftUI, consumes a public API providing random
 - Use of Core Data over UserDefaults to manage potentially large lists and use of filters.
 - Retry logic to fetch additional data when local cache is exhausted.
 - Use of soft deletion for RandomUsers (using deleted flag) to avoid retrieving a copy of the same user from the API again.
-
+- To avoid repetition I assumed the email must be unique, so to add and modify users, I will treat them as primary key in CoreData entity.
+- Since data will always be persisted locally, the data flow will be the following: DTO (API) -> Entity (CoreData) <-> Domain.
+        -> I decided to keep DTO to Domain mapping to show the separation of concerns.
 
 ---
 
