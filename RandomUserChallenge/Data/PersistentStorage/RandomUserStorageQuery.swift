@@ -50,7 +50,7 @@ final class RandomUserStorageQuery: RandomUserStorageQueryProtocol {
 
     func softDeleteUser(byEmail email: String) throws {
         guard let entity = try fetchUser(byEmail: email) else { return }
-        entity.deleted = true
+        entity.deletedUser = true
         try context.save()
     }
 

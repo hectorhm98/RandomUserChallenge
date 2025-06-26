@@ -47,7 +47,7 @@ extension RandomUserEntity {
         self.locationState = dto.location.state
         self.registered = dto.registered
         self.index = index
-        self.deleted = deleted
+        self.deletedUser = deleted
     }
 }
 
