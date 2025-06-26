@@ -13,12 +13,13 @@ enum Gender: String {
 }
 
 struct RandomUser {
+    let index: Int
     let name: String
     let surname: String
     let email: String
-    let picture: RandomUserPicture
+    let picture: Picture
     let phone: String
     let gender: Gender
-    let location: RandomUserLocation
+    let location: Location
     let registered: Date
 }

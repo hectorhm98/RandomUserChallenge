@@ -11,8 +11,8 @@ class RandomUserAPIClient {
         
     }
     
-    func fetchRandomUsers() async throws -> [RandomUserDTO] {
-        guard let url = URL(string: "http://api.randomuser.me/") else {
+    func fetchRandomUsers(resultSize: Int) async throws -> [RandomUserDTO] {
+        guard let url = URL(string: "http://api.randomuser.me/?results=\(resultSize)") else {
             throw URLError(.badURL)
         }
 
