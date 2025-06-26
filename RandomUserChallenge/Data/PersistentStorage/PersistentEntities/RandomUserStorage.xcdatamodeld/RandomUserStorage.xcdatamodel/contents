@@ -4,7 +4,7 @@
         <attribute name="deleted" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="email" optional="YES" attributeType="String"/>
         <attribute name="gender" optional="YES" attributeType="String"/>
-        <attribute name="index" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="index" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="locationCity" optional="YES" attributeType="String"/>
         <attribute name="locationState" optional="YES" attributeType="String"/>
         <attribute name="locationStreet" optional="YES" attributeType="String"/>
