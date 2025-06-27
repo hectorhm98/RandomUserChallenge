@@ -6,7 +6,11 @@
 //
 import Foundation
 
-class RandomUserAPIClient {
+protocol RandomUserAPIClient {
+    func fetchRandomUsers(resultSize: Int) async throws -> [RandomUserDTO]
+}
+
+class RandomUserAPIClientImpl: RandomUserAPIClient {
     public init() {
         
     }

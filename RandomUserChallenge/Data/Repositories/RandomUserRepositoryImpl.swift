@@ -7,10 +7,10 @@
 
 final class RandomUserRepositoryImpl: RandomUserRepository {
     private let api: RandomUserAPIClient
-    private let localStorage: RandomUserStorageQuery
+    private let localStorage: RandomUserStorageQueryProtocol
     private let pageSize = 20
 
-    init(api: RandomUserAPIClient, localStorage: RandomUserStorageQuery) {
+    init(api: RandomUserAPIClient, localStorage: RandomUserStorageQueryProtocol) {
         self.api = api
         self.localStorage = localStorage
     }

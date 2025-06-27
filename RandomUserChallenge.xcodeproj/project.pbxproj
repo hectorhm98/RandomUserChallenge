@@ -40,14 +40,14 @@
 			path = RandomUserChallenge;
 			sourceTree = "<group>";
 		};
-		65408D442E0C465300D91DB9 /* RandomUserChallengeTests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = RandomUserChallengeTests;
-			sourceTree = "<group>";
-		};
 		65408D4E2E0C465300D91DB9 /* RandomUserChallengeUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = RandomUserChallengeUITests;
+			sourceTree = "<group>";
+		};
+		65408DF82E0ECD8100D91DB9 /* RandomUserChallengeTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = RandomUserChallengeTests;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -82,7 +82,7 @@
 			children = (
 				65408D9B2E0D54E900D91DB9 /* README.md */,
 				65408D362E0C465000D91DB9 /* RandomUserChallenge */,
-				65408D442E0C465300D91DB9 /* RandomUserChallengeTests */,
+				65408DF82E0ECD8100D91DB9 /* RandomUserChallengeTests */,
 				65408D4E2E0C465300D91DB9 /* RandomUserChallengeUITests */,
 				65408D352E0C465000D91DB9 /* Products */,
 			);
@@ -137,7 +137,7 @@
 				65408D432E0C465300D91DB9 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				65408D442E0C465300D91DB9 /* RandomUserChallengeTests */,
+				65408DF82E0ECD8100D91DB9 /* RandomUserChallengeTests */,
 			);
 			name = RandomUserChallengeTests;
 			packageProductDependencies = (

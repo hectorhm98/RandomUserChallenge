@@ -30,7 +30,7 @@ final class RandomUserStorageQuery: RandomUserStorageQueryProtocol {
     
     func fetchUsers(offset: Int, limit: Int) throws -> [RandomUserEntity] {
         let request: NSFetchRequest<RandomUserEntity> = RandomUserEntity.fetchRequest()
-            request.predicate = NSPredicate(format: "deleted == %@", NSNumber(value: false))
+            request.predicate = NSPredicate(format: "deletedUser == %@", NSNumber(value: false))
             request.sortDescriptors = [NSSortDescriptor(key: "index", ascending: true)]
             request.fetchOffset = offset
             request.fetchLimit = limit
