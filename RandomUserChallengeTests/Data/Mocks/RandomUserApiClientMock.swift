@@ -8,11 +8,11 @@
 @testable import RandomUserChallenge
 
 final class RandomUserAPIClientMock: RandomUserAPIClient {
-    var fetchCalled = false
+    var fetchCalled = 0
     var usersToReturn: [RandomUserDTO] = []
 
     func fetchRandomUsers(resultSize: Int) async throws -> [RandomUserDTO] {
-        fetchCalled = true
+        fetchCalled += 1
         return usersToReturn
     }
 }

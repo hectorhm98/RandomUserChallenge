@@ -22,3 +22,41 @@ func makeInMemoryManagedObjectContext() -> NSManagedObjectContext {
 
     return container.viewContext
 }
+
+
+extension RandomUserEntity {
+    internal static func create(
+        in context: NSManagedObjectContext,
+        email: String = "john.doe@example.com",
+        name: String = "John",
+        surname: String = "Doe",
+        phone: String = "123456789",
+        gender: String = "male",
+        index: Int64 = 0,
+        deleted: Bool = false,
+        pictureLarge: String = "large",
+        pictureMedium: String = "medium",
+        pictureThumbnail: String = "thumb",
+        registeredDate: Date = Date(),
+        city: String = "City",
+        state: String = "State",
+        streetName: String = "123 Street",
+    ) -> RandomUserEntity {
+        let entity = RandomUserEntity(context: context)
+        entity.email = email
+        entity.name = name
+        entity.surname = surname
+        entity.phone = phone
+        entity.gender = gender
+        entity.index = index
+        entity.deletedUser = deleted
+        entity.pictureLarge = pictureLarge
+        entity.pictureMedium = pictureMedium
+        entity.pictureThumbnail = pictureThumbnail
+        entity.registered = registeredDate
+        entity.locationCity = city
+        entity.locationState = state
+        entity.locationStreet = streetName
+        return entity
+    }
+}
