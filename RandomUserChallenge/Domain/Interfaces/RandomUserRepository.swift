@@ -7,5 +7,6 @@
 
 
 protocol RandomUserRepository {
-    func fetchUsers(page: Int, pageSize: Int) async throws -> [RandomUser]
+    func fetchUsers(at: Int, batchSize: Int) async throws -> [RandomUser]
+    func deleteUser(byEmail email: String) throws
 }

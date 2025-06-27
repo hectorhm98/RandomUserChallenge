@@ -9,7 +9,7 @@ import CoreData
 protocol RandomUserStorageQueryProtocol {
     func fetchUser(byEmail email: String) throws -> RandomUserEntity?
     func fetchUsers(offset: Int, limit: Int) throws -> [RandomUserEntity]
-    func saveIfNotExists(_ dto: RandomUserDTO) throws
+    func saveIfNotExists(_ dto: RandomUserDTO) throws -> Bool
     func softDeleteUser(byEmail email: String) throws
     func getNextIndex() throws -> Int64
 }
@@ -38,14 +38,15 @@ final class RandomUserStorageQuery: RandomUserStorageQueryProtocol {
     }
     
 
-    func saveIfNotExists(_ dto: RandomUserDTO) throws {
+    func saveIfNotExists(_ dto: RandomUserDTO) throws -> Bool{
         if let _ = try fetchUser(byEmail: dto.email) {
-            return
+            return false
         }
         let nextIndex = try getNextIndex()
         let entity = RandomUserEntity(context: context)
         entity.update(from: dto, index: nextIndex)
         try context.save()
+        return true
     }
 
     func softDeleteUser(byEmail email: String) throws {
