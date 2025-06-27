@@ -8,17 +8,48 @@
 import SwiftUI
 
 struct RandomUserListView: View {
+    @StateObject var viewModel: RandomUserListViewModel
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, random world!")
+            List {
+                ForEach(viewModel.users) { user in
+                    RandomUserCellView(
+                        user: user,
+                        isLast: user == viewModel.users.last,
+                        onAppear: { Task { await viewModel.loadUsers() } },
+                        onTap: { /*TODO navigation */ }
+                    )
+                }
+            }
+            .overlay {
+                if viewModel.isLoading {
+                    ProgressView()
+                }
+            }
+            .onAppear {
+                Task { await viewModel.loadUsers() }
+            }
         }
-        .padding()
+}
+
+struct RandomUserCellView: View {
+    let user: RandomUser
+    let isLast: Bool
+    let onAppear: () -> Void
+    let onTap: () -> Void
+    
+    var body: some View {
+        Text(user.email)
+            .onTapGesture { onTap() }
+            .onAppear {
+                if isLast {
+                    onAppear()
+                }
+            }
     }
 }
 
+
 #Preview {
-    RandomUserListView()
+    RandomUserListView(viewModel: .preview)
 }

@@ -12,7 +12,8 @@ enum Gender: String {
     case unknown = "unknown"
 }
 
-struct RandomUser {
+struct RandomUser: Identifiable, Equatable {
+    var id: String { email }
     let name: String
     let surname: String
     let email: String

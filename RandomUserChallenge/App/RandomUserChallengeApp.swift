@@ -11,7 +11,7 @@ import SwiftUI
 struct RandomUserChallengeApp: App {
     var body: some Scene {
         WindowGroup {
-            RandomUserListView()
+            //RandomUserListView()
         }
     }
 }
