@@ -42,4 +42,12 @@ final class RandomUserRepositoryImpl: RandomUserRepository {
     func deleteUser(byEmail email: String) throws {
         try localStorage.softDeleteUser(byEmail: email)
     }
+    
+    func fetchFilteredUsers(by query: String) throws -> [RandomUser] {
+        fatalError() //TODO implement it
+    }
+    
+    func fetchNewUsers(batchSize: Int) async throws {
+        fatalError() //TODO implement it
+    }
 }

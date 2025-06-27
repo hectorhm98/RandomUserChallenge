@@ -9,4 +9,6 @@
 protocol RandomUserRepository {
     func fetchUsers(at: Int, batchSize: Int) async throws -> [RandomUser]
     func deleteUser(byEmail email: String) throws
+    func fetchFilteredUsers(by query: String) throws -> [RandomUser]
+    func fetchNewUsers(batchSize: Int) async throws 
 }
