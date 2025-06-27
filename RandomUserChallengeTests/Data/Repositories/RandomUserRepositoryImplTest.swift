@@ -29,6 +29,7 @@ final class RandomUserRepositoryTests: XCTestCase {
     }
 
     //This test will make sure to call API if there is no local data persisted
+    // MARK: - API Fetching Behavior
     func test_fetchUsers_callsAPIAndSavesIfNoLocalData() async throws {
         apiMock.usersToReturn = apiUsers
 
@@ -43,6 +44,7 @@ final class RandomUserRepositoryTests: XCTestCase {
     }
     
     //This test will guarantee that no API is called if the data is persisted
+    // MARK: - Local Cache Behavior
     func test_fetchUsers_usesLocalDataIfAvailable() async throws {
         _ = RandomUserEntity.create(in: context, email: "john.doe@example.com", index: 0)
         try context.save()
@@ -57,6 +59,7 @@ final class RandomUserRepositoryTests: XCTestCase {
     }
     
     //This test asserts that deleted users are not being retrieved when fetchUsers
+    // MARK: - Fetching with DeletedUsers Behavior
     func test_fetchUsers_ignoresDeletedUsers() async throws {
         _ = RandomUserEntity.create(in: context, email: "john.doe.first@example.com", index: 0)
         _ = RandomUserEntity.create(in: context, email: "alternative.john.doe@example.com", index: 1, deleted: true)
@@ -75,6 +78,7 @@ final class RandomUserRepositoryTests: XCTestCase {
     }
     
     //This test will assert that no repeated RandomUser is stored. Also the retryLimit if API returns always the same
+    // MARK: - Duplicate and Retry Handling
     func test_fetchUsers_respectsRetryLimitOnDuplicates() async throws {
         _ = RandomUserEntity.create(in: context, email: "john.doe.first@example.com", index: 0)
         try context.save()
@@ -91,18 +95,19 @@ final class RandomUserRepositoryTests: XCTestCase {
     }
     
     //This tests asserts that deleteUser soft deletes correctly a user
+    // MARK: - Deletion Behavior
     func test_deleteUser_updatesUserDeletedFlag() async throws {
         let repo = RandomUserRepositoryImpl(api: apiMock, localStorage: storage)
         _ = RandomUserEntity.create(in: context, email: "john.doe@example.com", index: 0)
         _ = RandomUserEntity.create(in: context, email: "alternative.john.doe@example.com", index: 1, deleted: true)
         
-        XCTAssertEqual(try storage.fetchUser(byEmail: "alternative.john.doe@example.com")?.deletedUser, true)
-        XCTAssertEqual(try storage.fetchUser(byEmail: "john.doe@example.com")?.deletedUser, false)
+        XCTAssertTrue(try storage.fetchUser(byEmail: "alternative.john.doe@example.com")?.deletedUser == true)
+        XCTAssertTrue(try storage.fetchUser(byEmail: "john.doe@example.com")?.deletedUser == false)
         
         try repo.deleteUser(byEmail: "alternative.john.doe@example.com")
         try repo.deleteUser(byEmail: "john.doe@example.com")
         
-        XCTAssertEqual(try storage.fetchUser(byEmail: "alternative.john.doe@example.com")?.deletedUser, true)
-        XCTAssertEqual(try storage.fetchUser(byEmail: "john.doe@example.com")?.deletedUser, true)
+        XCTAssertTrue(try storage.fetchUser(byEmail: "alternative.john.doe@example.com")?.deletedUser == true)
+        XCTAssertTrue(try storage.fetchUser(byEmail: "john.doe@example.com")?.deletedUser == true)
     }
 }
