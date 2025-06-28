@@ -9,7 +9,7 @@ import SwiftUI
 
 struct RandomUserListView: View {
     @StateObject var viewModel: RandomUserListViewModel
-    
+
     var body: some View {
         NavigationStack {
             List {
@@ -28,27 +28,28 @@ struct RandomUserListView: View {
                         }
                     }
                 }
-            }
-            .padding(.vertical, 8)
-            .navigationTitle("Random Users")
-            .overlay {
-                if viewModel.isLoading {
-                    ZStack {
-                        Color(UIColor.systemGroupedBackground)
-                            .ignoresSafeArea()
+                VStack {
+                    if viewModel.isLoading {
                         ProgressView()
+                            .frame(maxWidth: .infinity, alignment: .center)
+                            .padding()
                     }
                 }
             }
+            .padding(.vertical, 8)
+            .navigationTitle("Random Users")
             .onAppear {
                 if viewModel.users.isEmpty {
                     Task { await viewModel.loadUsers() }
                 }
             }
             .navigationDestination(item: $viewModel.selectedUser) { selected in
-                RandomUserDetailView(user: selected, onDelete: {
-                    viewModel.deleteUser(email: selected.email)
-                })
+                RandomUserDetailView(
+                    user: selected,
+                    onDelete: {
+                        viewModel.deleteUser(email: selected.email)
+                    }
+                )
             }
             .background(Color(UIColor.systemGroupedBackground))
         }
@@ -60,7 +61,7 @@ struct RandomUserCellView: View {
     let isLast: Bool
     let onAppear: () -> Void
     let onTap: () -> Void
-    
+
     var body: some View {
         HStack(alignment: .center, spacing: 12) {
             AsyncImage(url: URL(string: user.picture.thumbnail)) { image in
@@ -77,7 +78,7 @@ struct RandomUserCellView: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text("\(user.name) \(user.surname)")
                     .font(.headline)
-            
+
                 HStack(alignment: .center, spacing: 6) {
                     Image(systemName: "envelope")
                         .imageScale(.small)
@@ -86,7 +87,7 @@ struct RandomUserCellView: View {
                         .foregroundColor(.secondary)
                         .lineLimit(1)
                 }
-                
+
                 HStack(alignment: .center, spacing: 6) {
                     Image(systemName: "phone")
                         .font(.subheadline)
@@ -100,7 +101,7 @@ struct RandomUserCellView: View {
             Image(systemName: "chevron.right")
                 .foregroundColor(.gray)
         }
-        .frame(maxWidth: .infinity, alignment: .leading) //To expand the area for TapGesture
+        .frame(maxWidth: .infinity, alignment: .leading)  //To expand the area for TapGesture
         .contentShape(Rectangle())
         .padding(.vertical, 8)
         .onTapGesture { onTap() }
@@ -111,7 +112,6 @@ struct RandomUserCellView: View {
         }
     }
 }
-
 
 #Preview {
     RandomUserListView(viewModel: .preview)
