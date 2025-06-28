@@ -9,6 +9,7 @@ import SwiftUI
 
 struct RandomUserDetailView: View {
     let user: RandomUser
+    let onDelete: () -> Void
     
     var body: some View {
         VStack(spacing: 16) {
@@ -28,18 +29,59 @@ struct RandomUserDetailView: View {
             .clipShape(Circle())
             
             Text("\(user.name) \(user.surname)")
-                .font(.title2).bold()
-            
-            Text(user.email)
-                .foregroundStyle(.secondary)
-            
-            Text(user.phone)
-                .foregroundStyle(.secondary)
+                .font(.title).bold()
+            ScrollView {
+                VStack(alignment: .leading, spacing: 24) {
+                    DetailRow(label: "Email", value: user.email, icon: "envelope")
+                    DetailRow(label: "Phone", value: user.phone, icon: "phone")
+                    DetailRow(label: "Gender", value: user.gender.rawValue.capitalized, icon: "person")
+                    DetailRow(label: "Location", value: "\(user.location.street), \(user.location.city), \(user.location.state)", icon: "mappin.and.ellipse")
+                    DetailRow(label: "Registered", value: user.registered.formatted(), icon: "calendar")
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.vertical, 16)
+            }
             
             Spacer()
         }
         .padding()
         .navigationTitle("User Detail")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button(role: .destructive, action: {
+                    onDelete()
+                }) {
+                    Image(systemName: "trash")
+                        .foregroundStyle(.red)
+                        .imageScale(.medium)
+                }
+            }
+        }
     }
+}
+
+struct DetailRow: View {
+    let label: String
+    let value: String
+    let icon: String
+    
+    var body: some View {
+        HStack(alignment: .center, spacing: 12) {
+            Image(systemName: icon)
+                .foregroundColor(.blue)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(label)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                Text(value)
+                    .font(.body)
+            }
+        }
+    }
+}
+
+
+#Preview {
+    RandomUserDetailView(user: dummyUsers.first!, onDelete: {})
 }

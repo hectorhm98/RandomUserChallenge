@@ -44,7 +44,9 @@ struct RandomUserListView: View {
                 Task { await viewModel.loadUsers() }
             }
             .navigationDestination(item: $viewModel.selectedUser) { selected in
-                RandomUserDetailView(user: selected)
+                RandomUserDetailView(user: selected, onDelete: {
+                    viewModel.deleteUser(email: selected.email)
+                })
             }
             .background(Color(UIColor.systemGroupedBackground))
         }

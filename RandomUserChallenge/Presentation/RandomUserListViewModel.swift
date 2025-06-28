@@ -83,6 +83,7 @@ final class RandomUserListViewModel: ObservableObject {
             do {
                 try deleteUserUseCase.execute(byEmail: email)
                 self.users.removeAll { $0.email == email }
+                self.selectedUser = nil
             } catch {
                 errorMessage = "Error deleting user: \(error.localizedDescription)"
             }
