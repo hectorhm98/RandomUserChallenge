@@ -45,7 +45,7 @@ extension RandomUserEntity {
         self.locationStreet = "\(dto.location.street.number) \(dto.location.street.name)"
         self.locationCity = dto.location.city
         self.locationState = dto.location.state
-        self.registered = dto.registered
+        self.registered = dto.registered.date
         self.index = index
         self.deletedUser = deleted
     }

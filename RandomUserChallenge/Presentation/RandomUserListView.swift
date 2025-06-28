@@ -41,7 +41,9 @@ struct RandomUserListView: View {
                 }
             }
             .onAppear {
-                Task { await viewModel.loadUsers() }
+                if viewModel.users.isEmpty {
+                    Task { await viewModel.loadUsers() }
+                }
             }
             .navigationDestination(item: $viewModel.selectedUser) { selected in
                 RandomUserDetailView(user: selected, onDelete: {

@@ -13,5 +13,11 @@ struct RandomUserDTO: Codable {
     let phone: String
     let gender: String
     let location: LocationDTO
-    let registered: Date
+    let registered: RegisteredDTO
+}
+
+
+struct RegisteredDTO: Codable {
+    let date: Date
+    let age: Int
 }

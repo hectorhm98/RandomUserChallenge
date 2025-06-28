@@ -11,6 +11,8 @@ struct RandomUserDetailView: View {
     let user: RandomUser
     let onDelete: () -> Void
     
+    @State private var showDeleteAlert = false
+    
     var body: some View {
         VStack(spacing: 16) {
             AsyncImage(url: URL(string: user.picture.large)) { phase in
@@ -50,7 +52,7 @@ struct RandomUserDetailView: View {
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button(role: .destructive, action: {
-                    onDelete()
+                    showDeleteAlert = true
                 }) {
                     Image(systemName: "trash")
                         .foregroundStyle(.red)
@@ -58,6 +60,12 @@ struct RandomUserDetailView: View {
                 }
             }
         }
+        .alert("Are you sure you want to delete this user?", isPresented: $showDeleteAlert) {
+                    Button("Delete", role: .destructive) {
+                        onDelete()
+                    }
+                    Button("Cancel", role: .cancel) {}
+                }
     }
 }
 

@@ -16,17 +16,18 @@ class RandomUserAPIClientImpl: RandomUserAPIClient {
     }
     
     func fetchRandomUsers(resultSize: Int) async throws -> [RandomUserDTO] {
-        guard let url = URL(string: "http://api.randomuser.me/?results=\(resultSize)") else {
+        guard let url = URL(string: "https://api.randomuser.me/?results=\(resultSize)") else {
             throw URLError(.badURL)
         }
 
         let (data, response) = try await URLSession.shared.data(from: url)
+        
 
         guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
             throw URLError(.badServerResponse)
         }
-
-        let randomUsers = try JSONDecoder().decode([RandomUserDTO].self, from: data)
-        return randomUsers
+        
+        let container = try JSONDecoder.withISO8601Milliseconds().decode(ResultsContainer<RandomUserDTO>.self, from: data)
+        return container.results
     }
 }

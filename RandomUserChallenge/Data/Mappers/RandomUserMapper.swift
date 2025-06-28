@@ -16,7 +16,7 @@ struct RandomUserMapper {
             phone: dto.phone,
             gender: Gender(rawValue: dto.gender) ?? .unknown,
             location: Location(street: "\(dto.location.street.number) \(dto.location.street.name)", city: dto.location.city, state: dto.location.state),
-            registered: dto.registered
+            registered: dto.registered.date
         )
     }
 }

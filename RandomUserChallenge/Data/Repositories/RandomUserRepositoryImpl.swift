@@ -26,6 +26,7 @@ final class RandomUserRepositoryImpl: RandomUserRepository {
         let maxAttempts = 10
         var attempts = 0
         
+        
         while remaining > 0 && attempts < maxAttempts { // Added a maxAttempts to avoid infinite bucle if API just returns repeated users.
             let fetchedDTOs = try await api.fetchRandomUsers(resultSize: remaining)
             let insertedCount = try fetchedDTOs.reduce(0) { count, dto in
