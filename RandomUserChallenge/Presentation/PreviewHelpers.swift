@@ -13,6 +13,7 @@ struct MockGetUsersUseCase: GetRandomUsersUseCase {
     let users: [RandomUser]
     func execute(offset: Int, batchSize: Int) async throws -> [RandomUser] {
         guard offset == 0 else { return [] }
+        try await Task.sleep(for: .seconds(2))
         return users
     }
 }
@@ -40,8 +41,8 @@ struct MockDeleteUserUseCase: DeleteRandomUserUseCase {
 extension RandomUserListViewModel {
     static var preview: RandomUserListViewModel {
         let dummyUsers: [RandomUser] = [
-            RandomUser(name: "John", surname: "Doe", email: "john.doe@example.com", picture: Picture(large: "", medium: "", thumbnail: ""), phone: "600111222", gender: Gender.male, location: Location(street: "221B Baker Street", city: "Oklahoma", state: "California"), registered: Date()),
-            RandomUser(name: "Johana", surname: "Doe", email: "joahn.doe@example.com", picture: Picture(large: "", medium: "", thumbnail: ""), phone: "600333444", gender: Gender.female, location: Location(street: "221B Baker Street", city: "Oklahoma", state: "California"), registered: Date()),
+            RandomUser(name: "John", surname: "Doe", email: "john.doe@example.com", picture: Picture(large: "https://randomuser.me/api/portraits/men/69.jpg", medium: "https://randomuser.me/api/portraits/med/men/69.jpg", thumbnail: "https://randomuser.me/api/portraits/thumb/men/69.jpg"), phone: "600111222", gender: Gender.male, location: Location(street: "221B Baker Street", city: "Oklahoma", state: "California"), registered: Date()),
+            RandomUser(name: "Johana", surname: "Doe", email: "johana.doe@example.com", picture: Picture(large: "https://randomuser.me/api/portraits/women/86.jpg", medium: "https://randomuser.me/api/portraits/med/women/86.jpg", thumbnail: "https://randomuser.me/api/portraits/thumb/women/86.jpg"), phone: "600333444", gender: Gender.female, location: Location(street: "221B Baker Street", city: "Oklahoma", state: "California"), registered: Date()),
         ]
         let vm = RandomUserListViewModel(
             getUsersUseCase: MockGetUsersUseCase(users: dummyUsers),
@@ -49,7 +50,6 @@ extension RandomUserListViewModel {
             loadNewUsersForQueryUseCase: MockLoadNewUsersForQueryUseCase(users: dummyUsers),
             deleteUserUseCase: MockDeleteUserUseCase()
         )
-        vm.users = dummyUsers
         return vm
     }
 }

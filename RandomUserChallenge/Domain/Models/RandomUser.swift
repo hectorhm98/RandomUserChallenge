@@ -12,7 +12,7 @@ enum Gender: String {
     case unknown = "unknown"
 }
 
-struct RandomUser: Identifiable, Equatable {
+struct RandomUser: Identifiable, Equatable, Hashable {
     var id: String { email }
     let name: String
     let surname: String

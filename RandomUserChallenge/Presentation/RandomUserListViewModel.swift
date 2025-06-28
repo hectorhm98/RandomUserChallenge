@@ -12,6 +12,7 @@ final class RandomUserListViewModel: ObservableObject {
     @Published var isLoading: Bool = false
     @Published var errorMessage: String? = nil
     @Published var currentQuery: String = ""
+    @Published var selectedUser: RandomUser? = nil
     
     private let getUsersUseCase: GetRandomUsersUseCase
     private let filterUsersUseCase: FilterRandomUsersUseCase
@@ -76,6 +77,7 @@ final class RandomUserListViewModel: ObservableObject {
         }
     }
     
+    //MARK: - Delete function
     func deleteUser(email: String) {
         Task {
             do {
@@ -85,5 +87,9 @@ final class RandomUserListViewModel: ObservableObject {
                 errorMessage = "Error deleting user: \(error.localizedDescription)"
             }
         }
+    }
+    
+    func selectUser(user: RandomUser) {
+        selectedUser = user
     }
 }
