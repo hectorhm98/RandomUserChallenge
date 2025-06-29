@@ -17,7 +17,11 @@ struct RandomUserListView: View {
                     RandomUserCellView(
                         user: user,
                         isLast: user == viewModel.users.last,
-                        onAppear: { Task { await viewModel.loadUsers() } },
+                        onAppear: {
+                            if viewModel.currentQuery.isEmpty {
+                                Task { await viewModel.loadUsers() }
+                            }
+                        },
                         onTap: { viewModel.selectUser(user: user) }
                     )
                     .swipeActions {
@@ -28,15 +32,26 @@ struct RandomUserListView: View {
                         }
                     }
                 }
-                VStack {
-                    if viewModel.isLoading {
-                        ProgressView()
-                            .frame(maxWidth: .infinity, alignment: .center)
-                            .padding()
-                    }
+                if viewModel.isLoading {
+                    ProgressView()
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        .padding()
+                        .id(UUID())  //Needs a new id to show correclty the loading icon of the ProgressView in the List
                 }
             }
-            .padding(.vertical, 8)
+            .searchable(
+                text: $viewModel.currentQuery,
+                prompt: "Search by name, surename or email"
+            )
+            .onChange(of: viewModel.currentQuery) {
+                if viewModel.currentQuery.isEmpty {
+                    viewModel.clearFilter()
+                }
+            }
+            .onSubmit(of: .search) {
+                viewModel.applyFilter()
+            }
+            .padding(.vertical, 0)
             .navigationTitle("Random Users")
             .onAppear {
                 if viewModel.users.isEmpty {

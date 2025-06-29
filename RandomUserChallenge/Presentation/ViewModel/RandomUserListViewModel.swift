@@ -13,12 +13,12 @@ final class RandomUserListViewModel: ObservableObject {
     @Published var errorMessage: String? = nil
     @Published var currentQuery: String = ""
     @Published var selectedUser: RandomUser? = nil
-    
+
     private let getUsersUseCase: GetRandomUsersUseCase
     private let filterUsersUseCase: FilterRandomUsersUseCase
     private let loadNewUsersForQueryUseCase: LoadNewUsersForQueryUseCase
     private let deleteUserUseCase: DeleteRandomUserUseCase
-    
+
     init(
         getUsersUseCase: GetRandomUsersUseCase,
         filterUsersUseCase: FilterRandomUsersUseCase,
@@ -30,45 +30,57 @@ final class RandomUserListViewModel: ObservableObject {
         self.loadNewUsersForQueryUseCase = loadNewUsersForQueryUseCase
         self.deleteUserUseCase = deleteUserUseCase
     }
-    
+
     //MARK: - Load users functions
     func loadUsers(batchSize: Int = 30) async {
         guard !isLoading else { return }
         isLoading = true
         errorMessage = nil
         do {
-            let fetchUsers = currentQuery.isEmpty
-                ? try await loadAllUsers(batchSize: batchSize)
-                : try await loadFilteredUsers(batchSize: batchSize)
-            users.append(contentsOf: fetchUsers)
+            if currentQuery.isEmpty {
+                users.append(
+                    contentsOf: try await loadAllUsers(batchSize: batchSize)
+                )
+            } else {
+                users = try await loadFilteredUsers(batchSize: batchSize)
+            }
         } catch {
             errorMessage = "Error loading users: \(error.localizedDescription)"
         }
         isLoading = false
     }
-    
+
     private func loadAllUsers(batchSize: Int) async throws -> [RandomUser] {
-        return try await getUsersUseCase.execute(offset: users.count, batchSize: batchSize)
+        return try await getUsersUseCase.execute(
+            offset: users.count,
+            batchSize: batchSize
+        )
     }
 
-    private func loadFilteredUsers(batchSize: Int) async throws -> [RandomUser] {
-        return try await loadNewUsersForQueryUseCase.execute(currentQuery: currentQuery, batchSize: batchSize)
+    private func loadFilteredUsers(batchSize: Int) async throws -> [RandomUser]
+    {
+        return try await loadNewUsersForQueryUseCase.execute(
+            currentQuery: currentQuery,
+            batchSize: batchSize
+        )
     }
-    
+
     //MARK: - Filter function
-    func applyFilter(query: String) {
-        currentQuery = query
+    func applyFilter() {
         errorMessage = nil
         Task {
             do {
-                let filtered = try filterUsersUseCase.execute(query: query)
+                let filtered = try filterUsersUseCase.execute(
+                    query: currentQuery
+                )
                 self.users = filtered
             } catch {
-                errorMessage = "Error filtering users: \(error.localizedDescription)"
+                errorMessage =
+                    "Error filtering users: \(error.localizedDescription)"
             }
         }
     }
-    
+
     func clearFilter() {
         currentQuery = ""
         self.users = []
@@ -76,7 +88,7 @@ final class RandomUserListViewModel: ObservableObject {
             await loadUsers()
         }
     }
-    
+
     //MARK: - Delete function
     func deleteUser(email: String) {
         Task {
@@ -85,11 +97,12 @@ final class RandomUserListViewModel: ObservableObject {
                 self.users.removeAll { $0.email == email }
                 self.selectedUser = nil
             } catch {
-                errorMessage = "Error deleting user: \(error.localizedDescription)"
+                errorMessage =
+                    "Error deleting user: \(error.localizedDescription)"
             }
         }
     }
-    
+
     func selectUser(user: RandomUser) {
         selectedUser = user
     }

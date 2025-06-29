@@ -9,11 +9,11 @@ import CoreData
 protocol RandomUserStorageQueryProtocol {
     func fetchUser(byEmail email: String) throws -> RandomUserEntity?
     func fetchUsers(offset: Int, limit: Int) throws -> [RandomUserEntity]
+    func fetchUsers(by query: String) throws -> [RandomUserEntity]
     func saveIfNotExists(_ dto: RandomUserDTO) throws -> Bool
     func softDeleteUser(byEmail email: String) throws
     func getNextIndex() throws -> Int64
 }
-
 
 final class RandomUserStorageQuery: RandomUserStorageQueryProtocol {
     private let context: NSManagedObjectContext
@@ -22,24 +22,56 @@ final class RandomUserStorageQuery: RandomUserStorageQueryProtocol {
         self.context = context
     }
 
+    //MARK: - Fetch functions
     func fetchUser(byEmail email: String) throws -> RandomUserEntity? {
-        let request: NSFetchRequest<RandomUserEntity> = RandomUserEntity.fetchRequest()
+        let request: NSFetchRequest<RandomUserEntity> =
+            RandomUserEntity.fetchRequest()
         request.predicate = NSPredicate(format: "email == %@", email)
         return try context.fetch(request).first
     }
-    
+
     func fetchUsers(offset: Int, limit: Int) throws -> [RandomUserEntity] {
-        let request: NSFetchRequest<RandomUserEntity> = RandomUserEntity.fetchRequest()
-            request.predicate = NSPredicate(format: "deletedUser == %@", NSNumber(value: false))
-            request.sortDescriptors = [NSSortDescriptor(key: "index", ascending: true)]
-            request.fetchOffset = offset
-            request.fetchLimit = limit
+        let request: NSFetchRequest<RandomUserEntity> =
+            RandomUserEntity.fetchRequest()
+        request.predicate = NSPredicate(
+            format: "deletedUser == %@",
+            NSNumber(value: false)
+        )
+        request.sortDescriptors = [
+            NSSortDescriptor(key: "index", ascending: true)
+        ]
+        request.fetchOffset = offset
+        request.fetchLimit = limit
         return try context.fetch(request)
     }
-    
 
-    func saveIfNotExists(_ dto: RandomUserDTO) throws -> Bool{
-        if let _ = try fetchUser(byEmail: dto.email) {
+    func fetchUsers(by query: String) throws -> [RandomUserEntity] {
+        let request: NSFetchRequest<RandomUserEntity> =
+            RandomUserEntity.fetchRequest()
+        let queryPredicates = NSCompoundPredicate(
+            orPredicateWithSubpredicates: [
+                NSPredicate(format: "name CONTAINS[cd] %@", query),
+                NSPredicate(format: "surname CONTAINS[cd] %@", query),
+                NSPredicate(format: "email CONTAINS[cd] %@", query),
+            ])
+        let finalPredicate: NSCompoundPredicate =
+            NSCompoundPredicate(andPredicateWithSubpredicates: [
+                queryPredicates,
+                NSPredicate(
+                    format: "deletedUser == %@",
+                    NSNumber(value: false)
+                ),
+            ])
+        request.predicate = finalPredicate
+        request.sortDescriptors = [
+            NSSortDescriptor(key: "index", ascending: true)
+        ]
+        return try context.fetch(request)
+    }
+
+    //MARK: - Save function
+    func saveIfNotExists(_ dto: RandomUserDTO) throws -> Bool {
+        if (try fetchUser(byEmail: dto.email)) != nil {
             return false
         }
         let nextIndex = try getNextIndex()
@@ -49,17 +81,23 @@ final class RandomUserStorageQuery: RandomUserStorageQueryProtocol {
         return true
     }
 
+    //MARK: - Delete function
     func softDeleteUser(byEmail email: String) throws {
         guard let entity = try fetchUser(byEmail: email) else { return }
         entity.deletedUser = true
         try context.save()
     }
 
-    func getNextIndex() throws -> Int64 { //Use max on NSDictionary fetch instead of filter by index for performance/efficience reason
-        let fetchRequest = NSFetchRequest<NSDictionary>(entityName: "RandomUserEntity")
+    func getNextIndex() throws -> Int64 {  //Use max on NSDictionary fetch instead of filter by index for performance/efficience reason
+        let fetchRequest = NSFetchRequest<NSDictionary>(
+            entityName: "RandomUserEntity"
+        )
         fetchRequest.resultType = .dictionaryResultType
 
-        let expression = NSExpression(forFunction: "max:", arguments: [NSExpression(forKeyPath: "index")])
+        let expression = NSExpression(
+            forFunction: "max:",
+            arguments: [NSExpression(forKeyPath: "index")]
+        )
         let expressionDescription = NSExpressionDescription()
         expressionDescription.name = "maxIndex"
         expressionDescription.expression = expression
@@ -70,7 +108,8 @@ final class RandomUserStorageQuery: RandomUserStorageQueryProtocol {
         let results = try context.fetch(fetchRequest)
 
         if let resultDict = results.first,
-           let maxIndex = resultDict["maxIndex"] as? Int64 {
+            let maxIndex = resultDict["maxIndex"] as? Int64
+        {
             return maxIndex + 1
         } else {
             return 0

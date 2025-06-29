@@ -45,10 +45,11 @@ final class RandomUserRepositoryImpl: RandomUserRepository {
     }
     
     func fetchFilteredUsers(by query: String) throws -> [RandomUser] {
-        fatalError() //TODO implement it
+        let filteredUsers = try localStorage.fetchUsers(by: query)
+        return filteredUsers.map { $0.toDomain() }
     }
     
     func fetchNewUsers(batchSize: Int) async throws {
-        fatalError() //TODO implement it
+        //fatalError() //TODO implement it
     }
 }
