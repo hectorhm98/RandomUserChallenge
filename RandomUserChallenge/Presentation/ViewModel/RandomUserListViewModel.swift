@@ -15,7 +15,6 @@ final class RandomUserListViewModel: ObservableObject {
     @Published var errorMessage: String? = nil
     @Published var currentQuery: String = ""
     @Published var selectedUser: RandomUser? = nil
-    @Published var shouldDisplayLoadMoreButton: Bool = false
     @Published var isScrolling: Bool = false
 
     //MARK: - Use Cases constants
@@ -98,7 +97,6 @@ final class RandomUserListViewModel: ObservableObject {
                     query: currentQuery
                 )
                 self.users = filtered
-                shouldDisplayLoadMoreButton = true
             } catch {
                 errorMessage =
                     "Error filtering users: \(error.localizedDescription)"
@@ -107,7 +105,6 @@ final class RandomUserListViewModel: ObservableObject {
     }
 
     func clearFilter() {
-        shouldDisplayLoadMoreButton = false
         currentQuery = ""
         self.users = []
         Task {

@@ -40,7 +40,7 @@ extension AppDependencyContainer {
     //In this case there is only production
     static let production = AppDependencyContainer(
         apiClient: RandomUserAPIClientImpl(),
-        localStorage: RandomUserStorageQuery(context: CoreDataStack.shared.mainContext)
+        localStorage: RandomUserStorageQuery(context: CoreDataStack.shared.newBackgroundContext())
     )
 }
 

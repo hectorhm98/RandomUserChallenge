@@ -27,7 +27,11 @@ final class RandomUserStorageQuery: RandomUserStorageQueryProtocol {
         let request: NSFetchRequest<RandomUserEntity> =
             RandomUserEntity.fetchRequest()
         request.predicate = NSPredicate(format: "email == %@", email)
-        return try context.fetch(request).first
+        var fetchResult: [RandomUserEntity] = []
+        try context.performAndWait {
+            fetchResult = try context.fetch(request)
+        }
+        return fetchResult.first
     }
 
     func fetchUsers(offset: Int, limit: Int) throws -> [RandomUserEntity] {
@@ -42,7 +46,11 @@ final class RandomUserStorageQuery: RandomUserStorageQueryProtocol {
         ]
         request.fetchOffset = offset
         request.fetchLimit = limit
-        return try context.fetch(request)
+        var fetchResult: [RandomUserEntity] = []
+        try context.performAndWait {
+            fetchResult = try context.fetch(request)
+        }
+        return fetchResult
     }
 
     func fetchUsers(by query: String) throws -> [RandomUserEntity] {
@@ -66,7 +74,11 @@ final class RandomUserStorageQuery: RandomUserStorageQueryProtocol {
         request.sortDescriptors = [
             NSSortDescriptor(key: "index", ascending: true)
         ]
-        return try context.fetch(request)
+        var fetchResult: [RandomUserEntity] = []
+        try context.performAndWait {
+            fetchResult = try context.fetch(request)
+        }
+        return fetchResult
     }
 
     //MARK: - Save function
@@ -77,7 +89,9 @@ final class RandomUserStorageQuery: RandomUserStorageQueryProtocol {
         let nextIndex = try getNextIndex()
         let entity = RandomUserEntity(context: context)
         entity.update(from: dto, index: nextIndex)
-        try context.save()
+        try context.performAndWait {
+            try context.save()
+        }
         return true
     }
 
@@ -85,7 +99,9 @@ final class RandomUserStorageQuery: RandomUserStorageQueryProtocol {
     func softDeleteUser(byEmail email: String) throws {
         guard let entity = try fetchUser(byEmail: email) else { return }
         entity.deletedUser = true
-        try context.save()
+        try context.performAndWait {
+            try context.save()
+        }
     }
 
     func getNextIndex() throws -> Int64 {  //Use max on NSDictionary fetch instead of filter by index for performance/efficience reason
@@ -105,7 +121,10 @@ final class RandomUserStorageQuery: RandomUserStorageQueryProtocol {
 
         fetchRequest.propertiesToFetch = [expressionDescription]
 
-        let results = try context.fetch(fetchRequest)
+        var results: [NSDictionary] = []
+        try context.performAndWait {
+            results = try context.fetch(fetchRequest)
+        }
 
         if let resultDict = results.first,
             let maxIndex = resultDict["maxIndex"] as? Int64

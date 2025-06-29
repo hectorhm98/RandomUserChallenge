@@ -57,7 +57,6 @@ struct RandomUserListView: View {
                                 .id(UUID())  //Needs a new id to show correclty the loading icon of the ProgressView in the List
                         }
                         if !viewModel.isLoading
-                            && viewModel.shouldDisplayLoadMoreButton
                         {
                             Button("Can't find the user? Load more") {
                                 Task {
