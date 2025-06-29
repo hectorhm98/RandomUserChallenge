@@ -12,7 +12,7 @@ final class RandomUserRepositoryTests: XCTestCase {
     var storage: RandomUserStorageQuery!
     var context: NSManagedObjectContext!
     let apiMock = RandomUserAPIClientMock()
-    let apiUsers: [RandomUserDTO] = [RandomUserDTO(name: NameDTO(title: "Mr", first: "John", last: "Doe"), email: "john.doe@example.com", picture: PictureDTO(large: "pictureLarge", medium: "pictureMedium", thumbnail: "pictureThumbnail"), phone: "1234567890", gender: "male", location: LocationDTO(street: StreetDTO(number: 221, name: "Backer Street"), city: "United States", state: "Arizona"), registered: Date())]
+    let apiUsers: [RandomUserDTO] = [RandomUserDTO(name: NameDTO(title: "Mr", first: "John", last: "Doe"), email: "john.doe@example.com", picture: PictureDTO(large: "pictureLarge", medium: "pictureMedium", thumbnail: "pictureThumbnail"), phone: "1234567890", gender: "male", location: LocationDTO(street: StreetDTO(number: 221, name: "Backer Street"), city: "United States", state: "Arizona"), registered: RegisteredDTO(date: Date(), age: 0))]
 
     override func setUp() {
         super.setUp()

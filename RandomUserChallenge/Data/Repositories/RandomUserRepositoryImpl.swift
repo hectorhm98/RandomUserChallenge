@@ -50,6 +50,6 @@ final class RandomUserRepositoryImpl: RandomUserRepository {
     }
     
     func fetchNewUsers(batchSize: Int) async throws {
-        //fatalError() //TODO implement it
+        _ = try await fetchUsers(at: Int(localStorage.getNextIndex()), batchSize: batchSize)
     }
 }
