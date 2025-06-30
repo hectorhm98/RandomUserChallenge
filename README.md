@@ -23,7 +23,7 @@ This iOS application, built with SwiftUI, consumes a public API providing random
 - Local persistence with Core Data for caching and offline support.
 - Logic to handle repeated users in API responses.
 - MVVM pattern with SwiftUI for clean, modular code.
-- Unit tests covering critical parts such as repositories, use cases and mappers.
+- Unit tests covering critical parts such as repositories and model views
 - Snapshot test covering the main UI layout.
 
 ---
@@ -38,6 +38,9 @@ This iOS application, built with SwiftUI, consumes a public API providing random
 - To avoid repetition I assumed the email must be unique, so to add and modify users, I will treat them as primary key in CoreData entity.
 - Since data will always be persisted locally, the data flow will be the following: DTO (API) -> Entity (CoreData) <-> Domain.
         -> I decided to keep DTO to Domain mapping to show the separation of concerns.
+- For the testing:
+   - I focus mainly on the Repository for all the Data logic -> To test in the same repository file the CoreData functions (RandomUserStorageQuery), instead of mocking it, I used a helper to make a NSManagedObjectContext object in memory (using the path "/dev/null" -> Recommended way, instead of using NSInMemoryStoreType)
+   - Since the UseCases are pretty simple, and the Repository is already tested, I implemented the test for ViewModel, mocking the Repository, so it already covers the UseCases and the business logic inside the VM.
 
 ---
 
@@ -66,8 +69,10 @@ This iOS application, built with SwiftUI, consumes a public API providing random
 - More users load automatically when scrolling to the bottom.
 - Users are stored locally to optimize subsequent loading.
 - When a user is tapped/selected, it navigates to a detail view showing more information.
-- A user can be deleted -> UI will not show it again
-- //TODO Complete
+- A user can be deleted using a swipe action or inside the detail view -> UI will not show it again
+- You can filter users by a query string, that will search match by name, surename and email.
+- If you are filtering and no more users are shown, a button to load more is displayed, to avoid fetching automatically (and potentially in a bucle) when a filter is too complex -> You have control to when fetch more random users
+- Floating button to go back to the top (displayed only when the scroll has finished and is not in the top already)
 
 
 ## Credits
