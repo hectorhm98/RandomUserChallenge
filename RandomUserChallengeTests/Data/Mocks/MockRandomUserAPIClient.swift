@@ -1,5 +1,5 @@
 //
-//  RandomUserApiClientMock.swift
+//  MockRandomUserAPIClient.swift
 //  RandomUserChallenge
 //
 //  Created by Hector Hernandez Montilla on 27/6/25.
@@ -7,7 +7,7 @@
 
 @testable import RandomUserChallenge
 
-final class RandomUserAPIClientMock: RandomUserAPIClient {
+final class MockRandomUserAPIClient: RandomUserAPIClient {
     var fetchCalled = 0
     var usersToReturn: [RandomUserDTO] = []
 

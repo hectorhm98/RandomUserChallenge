@@ -11,7 +11,7 @@ import XCTest
 final class RandomUserRepositoryTests: XCTestCase {
     var storage: RandomUserStorageQuery!
     var context: NSManagedObjectContext!
-    let apiMock = RandomUserAPIClientMock()
+    let apiMock = MockRandomUserAPIClient()
     let apiUsers: [RandomUserDTO] = [RandomUserDTO(name: NameDTO(title: "Mr", first: "John", last: "Doe"), email: "john.doe@example.com", picture: PictureDTO(large: "pictureLarge", medium: "pictureMedium", thumbnail: "pictureThumbnail"), phone: "1234567890", gender: "male", location: LocationDTO(street: StreetDTO(number: 221, name: "Backer Street"), city: "United States", state: "Arizona"), registered: RegisteredDTO(date: Date(), age: 0))]
 
     override func setUp() {
@@ -28,8 +28,8 @@ final class RandomUserRepositoryTests: XCTestCase {
         super.tearDown()
     }
 
-    //This test will make sure to call API if there is no local data persisted
     // MARK: - API Fetching Behavior
+    //This test will make sure to call API if there is no local data persisted
     func test_fetchUsers_callsAPIAndSavesIfNoLocalData() async throws {
         apiMock.usersToReturn = apiUsers
 
@@ -43,8 +43,20 @@ final class RandomUserRepositoryTests: XCTestCase {
         XCTAssertEqual(users.first?.email, "john.doe@example.com")
     }
     
-    //This test will guarantee that no API is called if the data is persisted
+    func test_fetchNewUsers_callsAPIAndSavesIfNoLocalData() async throws {
+        apiMock.usersToReturn = apiUsers
+        
+        let repo = RandomUserRepositoryImpl(api: apiMock, localStorage: storage)
+        
+        _ = try await repo.fetchNewUsers(batchSize: 1)
+        XCTAssertEqual(apiMock.fetchCalled, 1)
+        XCTAssertEqual(try storage.getNextIndex(), 1)
+        
+    }
+    
+    
     // MARK: - Local Cache Behavior
+    //This test will guarantee that no API is called if the data is persisted/
     func test_fetchUsers_usesLocalDataIfAvailable() async throws {
         _ = RandomUserEntity.create(in: context, email: "john.doe@example.com", index: 0)
         try context.save()
@@ -58,8 +70,9 @@ final class RandomUserRepositoryTests: XCTestCase {
         XCTAssertEqual(users.first?.email, "john.doe@example.com")
     }
     
-    //This test asserts that deleted users are not being retrieved when fetchUsers
+    
     // MARK: - Fetching with DeletedUsers Behavior
+    //This test asserts that deleted users are not being retrieved when fetchUsers
     func test_fetchUsers_ignoresDeletedUsers() async throws {
         _ = RandomUserEntity.create(in: context, email: "john.doe.first@example.com", index: 0)
         _ = RandomUserEntity.create(in: context, email: "alternative.john.doe@example.com", index: 1, deleted: true)
@@ -77,8 +90,9 @@ final class RandomUserRepositoryTests: XCTestCase {
         XCTAssertEqual(users.last?.email, "john.doe@example.com")
     }
     
-    //This test will assert that no repeated RandomUser is stored. Also the retryLimit if API returns always the same
+    
     // MARK: - Duplicate and Retry Handling
+    //This test will assert that no repeated RandomUser is stored. Also the retryLimit if API returns always the same
     func test_fetchUsers_respectsRetryLimitOnDuplicates() async throws {
         _ = RandomUserEntity.create(in: context, email: "john.doe.first@example.com", index: 0)
         try context.save()
@@ -94,8 +108,9 @@ final class RandomUserRepositoryTests: XCTestCase {
         XCTAssertEqual(users.last?.email, "john.doe@example.com")
     }
     
-    //This tests asserts that deleteUser soft deletes correctly a user
+    
     // MARK: - Deletion Behavior
+    //This tests asserts that deleteUser soft deletes correctly a user
     func test_deleteUser_updatesUserDeletedFlag() async throws {
         let repo = RandomUserRepositoryImpl(api: apiMock, localStorage: storage)
         _ = RandomUserEntity.create(in: context, email: "john.doe@example.com", index: 0)
@@ -109,5 +124,17 @@ final class RandomUserRepositoryTests: XCTestCase {
         
         XCTAssertTrue(try storage.fetchUser(byEmail: "alternative.john.doe@example.com")?.deletedUser == true)
         XCTAssertTrue(try storage.fetchUser(byEmail: "john.doe@example.com")?.deletedUser == true)
+    }
+    
+    
+    // MARK: - Filter Behavior
+    func test_filterUsers_returnsOnlyFilteredUsers() async throws {
+        let repo = RandomUserRepositoryImpl(api: apiMock, localStorage: storage)
+        _ = RandomUserEntity.create(in: context, email: "john.doe@example.com", index: 0)
+        _ = RandomUserEntity.create(in: context, email: "alternative.john.doe@example.com", index: 1)
+        
+        let users = try repo.fetchFilteredUsers(by: "alternative")
+        XCTAssertEqual(users.count, 1)
+        XCTAssertEqual(users[0].email, "alternative.john.doe@example.com")
     }
 }

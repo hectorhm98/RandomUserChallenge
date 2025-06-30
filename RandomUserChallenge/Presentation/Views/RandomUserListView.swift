@@ -76,7 +76,9 @@ struct RandomUserListView: View {
                 )
                 .onChange(of: viewModel.currentQuery) {
                     if viewModel.currentQuery.isEmpty {
-                        viewModel.clearFilter()
+                        Task {
+                            await viewModel.clearFilter()
+                        }
                     }
                 }
                 .onSubmit(of: .search) {

@@ -30,17 +30,4 @@ final class CoreDataStack {
     func newBackgroundContext() -> NSManagedObjectContext {
         persistentContainer.newBackgroundContext()
     }
-    
-    // MARK: - Save Support
-    func saveContext(context: NSManagedObjectContext? = nil) {
-        let context = context ?? mainContext
-        if context.hasChanges {
-            do {
-                try context.save()
-            } catch {
-                let nserror = error as NSError
-                fatalError("Error saving context: \(nserror), \(nserror.userInfo)")
-            }
-        }
-    }
 }

@@ -1,3 +1,4 @@
+import Combine
 //
 //  RandomUserListViewModel.swift
 //  RandomUserChallenge
@@ -5,7 +6,6 @@
 //  Created by Hector Hernandez Montilla on 27/6/25.
 //
 import Foundation
-import Combine
 
 @MainActor
 final class RandomUserListViewModel: ObservableObject {
@@ -46,7 +46,7 @@ final class RandomUserListViewModel: ObservableObject {
                 }
             }
             .store(in: &queryCancellable)
-        $isScrolling //This will help to know when the view will stop scrolling
+        $isScrolling  //This will help to know when the view will stop scrolling
             .debounce(for: .milliseconds(200), scheduler: RunLoop.main)
             .sink { [weak self] _ in
                 self?.isScrolling = false
@@ -91,38 +91,32 @@ final class RandomUserListViewModel: ObservableObject {
     //MARK: - Filter function
     func applyFilter() {
         errorMessage = nil
-        Task {
-            do {
-                let filtered = try filterUsersUseCase.execute(
-                    query: currentQuery
-                )
-                self.users = filtered
-            } catch {
-                errorMessage =
-                    "Error filtering users: \(error.localizedDescription)"
-            }
+        do {
+            let filtered = try filterUsersUseCase.execute(
+                query: currentQuery
+            )
+            self.users = filtered
+        } catch {
+            errorMessage =
+                "Error filtering users: \(error.localizedDescription)"
         }
     }
 
-    func clearFilter() {
+    func clearFilter() async {
         currentQuery = ""
         self.users = []
-        Task {
-            await loadUsers()
-        }
+        await loadUsers()
     }
 
     //MARK: - Delete function
     func deleteUser(email: String) {
-        Task {
-            do {
-                try deleteUserUseCase.execute(byEmail: email)
-                self.users.removeAll { $0.email == email }
-                self.selectedUser = nil
-            } catch {
-                errorMessage =
-                    "Error deleting user: \(error.localizedDescription)"
-            }
+        do {
+            try deleteUserUseCase.execute(byEmail: email)
+            self.users.removeAll { $0.email == email }
+            self.selectedUser = nil
+        } catch {
+            errorMessage =
+                "Error deleting user: \(error.localizedDescription)"
         }
     }
 
