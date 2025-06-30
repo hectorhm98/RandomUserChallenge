@@ -38,6 +38,7 @@ This iOS application, built with SwiftUI, consumes a public API providing random
 - For the testing:
    - I focus mainly on the Repository for all the Data logic -> To test in the same repository file the CoreData functions (RandomUserStorageQuery), instead of mocking it, I used a helper to make a NSManagedObjectContext object in memory (using the path "/dev/null" -> Recommended way, instead of using NSInMemoryStoreType)
    - Since the UseCases are pretty simple, and the Repository is already tested, I implemented the test for ViewModel, mocking the Repository, so it already covers the UseCases and the business logic inside the VM.
+   - For the Presentation (UI) tests I opted to use [SnapshotTesting](https://github.com/pointfreeco/swift-snapshot-testing)
 
 
 ## Requirements
