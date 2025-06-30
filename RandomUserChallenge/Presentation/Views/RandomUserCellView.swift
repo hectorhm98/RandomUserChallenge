@@ -15,10 +15,16 @@ struct RandomUserCellView: View {
 
     var body: some View {
         HStack(alignment: .center, spacing: 12) {
-            AppAsyncImage(url: URL(string: user.picture.thumbnail), placeholder: {ProgressView()}, fallbackName: "testImage")
-                .frame(width: 60, height: 60)
-                .clipShape(Circle())
-                .padding(.trailing, 16)
+            AsyncImage(url: URL(string: user.picture.thumbnail)) { image in
+                image
+                    .resizable()
+                    .scaledToFill()
+            } placeholder: {
+                ProgressView()
+            }
+            .frame(width: 60, height: 60)
+            .clipShape(Circle())
+            .padding(.trailing, 16)
             VStack(alignment: .leading, spacing: 4) {
                 Text("\(user.name) \(user.surname)")
                     .font(.headline)

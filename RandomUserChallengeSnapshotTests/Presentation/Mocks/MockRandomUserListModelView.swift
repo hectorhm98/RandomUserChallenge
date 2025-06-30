@@ -61,7 +61,7 @@ enum FakeRandomUserFactory {
                     city: "Fake City",
                     state: "Fake State"
                 ),
-                registered: Date()
+                registered: Date(timeIntervalSince1970: 1751309402)
             )
         }
     }
