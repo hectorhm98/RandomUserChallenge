@@ -12,7 +12,7 @@ final class RandomUserListViewModel: ObservableObject {
     //MARK: - Published variables
     @Published var users: [RandomUser] = []
     @Published var isLoading: Bool = false
-    @Published var errorMessage: String? = nil
+    @Published var errorType: ErrorType? = nil
     @Published var currentQuery: String = ""
     @Published var selectedUser: RandomUser? = nil
     @Published var isScrolling: Bool = false
@@ -58,7 +58,7 @@ final class RandomUserListViewModel: ObservableObject {
     func loadUsers(batchSize: Int = 30) async {
         guard !isLoading else { return }
         isLoading = true
-        errorMessage = nil
+        errorType = nil
         do {
             if currentQuery.isEmpty {
                 users.append(
@@ -68,7 +68,7 @@ final class RandomUserListViewModel: ObservableObject {
                 users = try await loadFilteredUsers(batchSize: batchSize)
             }
         } catch {
-            errorMessage = "Error loading users: \(error.localizedDescription)"
+            errorType = .fetch("Error loading users: \(error.localizedDescription)")
         }
         isLoading = false
     }
@@ -90,15 +90,14 @@ final class RandomUserListViewModel: ObservableObject {
 
     //MARK: - Filter function
     func applyFilter() {
-        errorMessage = nil
+        errorType = nil
         do {
             let filtered = try filterUsersUseCase.execute(
                 query: currentQuery
             )
             self.users = filtered
         } catch {
-            errorMessage =
-                "Error filtering users: \(error.localizedDescription)"
+            errorType = .filter("Error filtering users: \(error.localizedDescription)")
         }
     }
 
@@ -110,13 +109,13 @@ final class RandomUserListViewModel: ObservableObject {
 
     //MARK: - Delete function
     func deleteUser(email: String) {
+        errorType = nil
         do {
             try deleteUserUseCase.execute(byEmail: email)
             self.users.removeAll { $0.email == email }
             self.selectedUser = nil
         } catch {
-            errorMessage =
-                "Error deleting user: \(error.localizedDescription)"
+            errorType = .delete("Error deleting user: \(error.localizedDescription)")
         }
     }
 

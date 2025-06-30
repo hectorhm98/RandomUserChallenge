@@ -156,27 +156,27 @@ final class RandomUserListViewModelTest: XCTestCase {
 
         await viewModelError.loadUsers()
         XCTAssertEqual(
-            viewModelError.errorMessage,
-            "Error loading users: \(MockError.fetchFailed.localizedDescription)"
+            viewModelError.errorType,
+            .fetch("Error loading users: \(MockError.fetchFailed.localizedDescription)")
         )
 
         viewModelError.deleteUser(email: "someUser", )
         XCTAssertEqual(
-            viewModelError.errorMessage,
-            "Error deleting user: \(MockError.deleteUser.localizedDescription)"
+            viewModelError.errorType,
+            .delete("Error deleting user: \(MockError.deleteUser.localizedDescription)")
         )
 
         viewModelError.applyFilter()
         XCTAssertEqual(
-            viewModelError.errorMessage,
-            "Error filtering users: \(MockError.fetchFilteredUsers.localizedDescription)"
+            viewModelError.errorType,
+            .filter("Error filtering users: \(MockError.fetchFilteredUsers.localizedDescription)")
         )
         
         viewModelError.currentQuery = "someQuery"
         await viewModelError.loadUsers()
         XCTAssertEqual(
-            viewModelError.errorMessage,
-            "Error loading users: \(MockError.fetchNewUsers.localizedDescription)"
+            viewModelError.errorType,
+            .fetch("Error loading users: \(MockError.fetchNewUsers.localizedDescription)")
         )
 
     }

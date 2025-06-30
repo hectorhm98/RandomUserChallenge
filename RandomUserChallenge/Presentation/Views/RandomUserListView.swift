@@ -11,61 +11,81 @@ struct RandomUserListView: View {
     @StateObject var viewModel: RandomUserListViewModel
     @State private var showBackTopButton: Bool = false
 
+    var displayableErrorMessage: String? {
+        switch viewModel.errorType {
+        case .fetch(let message), .filter(let message):
+            return message
+        default:
+            return nil
+        }
+    }
+
     var body: some View {
         NavigationStack {
             ScrollViewReader { proxy in
                 List {
-                    Section(
-                        header:
-                            Text("User list")
-                            .id("top")
-                            .onAppear {
-                                showBackTopButton = false
-                            }
-                            .onDisappear {
-                                showBackTopButton = true
-                            }
-                    )
-                    {
-                        ForEach(viewModel.users) { user in
-                            RandomUserCellView(
-                                user: user,
-                                isLast: user == viewModel.users.last,
-                                onAppear: {
-                                    if viewModel.currentQuery.isEmpty {
-                                        Task { await viewModel.loadUsers() }
-                                    }
-                                },
-                                onTap: { viewModel.selectUser(user: user) }
-                            )
-                            .onAppear {
-                                viewModel.isScrolling = true
-
-                            }
-                            .swipeActions {
-                                Button(role: .destructive) {
-                                    viewModel.deleteUser(email: user.email)
-                                } label: {
-                                    Label("Delete", systemImage: "trash")
-                                }
-                            }
-                        }
-                        if viewModel.isLoading {
-                            ProgressView()
-                                .frame(maxWidth: .infinity, alignment: .center)
-                                .padding()
-                                .id(UUID())  //Needs a new id to show correclty the loading icon of the ProgressView in the List
-                        }
-                        if !viewModel.isLoading
-                        {
-                            Button("Can't find the user? Load more") {
-                                Task {
-                                    await viewModel.loadUsers(batchSize: 60)
-                                }
-                            }
+                    if let message = displayableErrorMessage {
+                        Text(message)
                             .padding()
                             .frame(maxWidth: .infinity, alignment: .center)
-                            .multilineTextAlignment(.center)
+                        Button("Refresh") {
+                            Task { await viewModel.loadUsers() }
+                        }
+                        .frame(maxWidth: .infinity, alignment: .center)
+                    } else {
+                        Section(
+                            header:
+                                Text("User list")
+                                .id("top")
+                                .onAppear {
+                                    showBackTopButton = false
+                                }
+                                .onDisappear {
+                                    showBackTopButton = true
+                                }
+                        ) {
+                            ForEach(viewModel.users) { user in
+                                RandomUserCellView(
+                                    user: user,
+                                    isLast: user == viewModel.users.last,
+                                    onAppear: {
+                                        if viewModel.currentQuery.isEmpty {
+                                            Task { await viewModel.loadUsers() }
+                                        }
+                                    },
+                                    onTap: { viewModel.selectUser(user: user) }
+                                )
+                                .onAppear {
+                                    viewModel.isScrolling = true
+
+                                }
+                                .swipeActions {
+                                    Button(role: .destructive) {
+                                        viewModel.deleteUser(email: user.email)
+                                    } label: {
+                                        Label("Delete", systemImage: "trash")
+                                    }
+                                }
+                            }
+                            if viewModel.isLoading {
+                                ProgressView()
+                                    .frame(
+                                        maxWidth: .infinity,
+                                        alignment: .center
+                                    )
+                                    .padding()
+                                    .id(UUID())  //Needs a new id to show correclty the loading icon of the ProgressView in the List
+                            }
+                            if !viewModel.isLoading {
+                                Button("Can't find the user? Load more") {
+                                    Task {
+                                        await viewModel.loadUsers(batchSize: 60)
+                                    }
+                                }
+                                .padding()
+                                .frame(maxWidth: .infinity, alignment: .center)
+                                .multilineTextAlignment(.center)
+                            }
                         }
                     }
                 }
@@ -124,62 +144,24 @@ struct RandomUserListView: View {
                     .default,
                     value: viewModel.isScrolling
                 )
-            }
-        }
-    }
-}
-
-struct RandomUserCellView: View {
-    let user: RandomUser
-    let isLast: Bool
-    let onAppear: () -> Void
-    let onTap: () -> Void
-
-    var body: some View {
-        HStack(alignment: .center, spacing: 12) {
-            AsyncImage(url: URL(string: user.picture.thumbnail)) { image in
-                image
-                    .resizable()
-                    .scaledToFill()
-            } placeholder: {
-                ProgressView()
-            }
-            .frame(width: 60, height: 60)
-            .clipShape(Circle())
-            .padding(.trailing, 16)
-            VStack(alignment: .leading, spacing: 4) {
-                Text("\(user.name) \(user.surname)")
-                    .font(.headline)
-
-                HStack(alignment: .center, spacing: 6) {
-                    Image(systemName: "envelope")
-                        .imageScale(.small)
-                    Text(user.email)
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                        .lineLimit(1)
+                .safeAreaInset(edge: .bottom) {
+                    if case let .delete(message) = viewModel.errorType {
+                        Text(message)
+                            .padding(.top)
+                            .frame(maxWidth: .infinity)
+                            .background(Color.red.opacity(0.75))
+                            .foregroundColor(.white)
+                            .fontWeight(.bold)
+                            .transition(.move(edge: .bottom).combined(with: .opacity))
+                            .onAppear {
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                                    withAnimation {
+                                        viewModel.errorType = nil
+                                    }
+                                }
+                            }
+                    }
                 }
-
-                HStack(alignment: .center, spacing: 6) {
-                    Image(systemName: "phone")
-                        .font(.subheadline)
-                    Text(user.phone)
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                        .lineLimit(1)
-                }
-            }
-            Spacer()
-            Image(systemName: "chevron.right")
-                .foregroundColor(.gray)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)  //To expand the area for TapGesture
-        .contentShape(Rectangle())
-        .padding(.vertical, 8)
-        .onTapGesture { onTap() }
-        .onAppear {
-            if isLast {
-                onAppear()
             }
         }
     }

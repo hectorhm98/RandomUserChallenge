@@ -4,7 +4,6 @@
 
 This iOS application, built with SwiftUI, consumes a public API providing random users and displays them in a scrolleable list. The app stores data locally using Core Data to persist data and avoid duplication from API calls.
 
----
 
 ## Architecture
 
@@ -15,7 +14,6 @@ This iOS application, built with SwiftUI, consumes a public API providing random
 - Mapping between DTOs, Core Data entities, and domain models is clearly separated to improve maintainability and testing.
 - Dependency Injection is applied to facilitate unit testing. I obted to do manual DI to not overcomplicate it.
 
----
 
 ## Features
 
@@ -26,7 +24,6 @@ This iOS application, built with SwiftUI, consumes a public API providing random
 - Unit tests covering critical parts such as repositories and model views
 - Snapshot test covering the main UI layout.
 
----
 
 ## Design Decisions
 
@@ -42,15 +39,13 @@ This iOS application, built with SwiftUI, consumes a public API providing random
    - I focus mainly on the Repository for all the Data logic -> To test in the same repository file the CoreData functions (RandomUserStorageQuery), instead of mocking it, I used a helper to make a NSManagedObjectContext object in memory (using the path "/dev/null" -> Recommended way, instead of using NSInMemoryStoreType)
    - Since the UseCases are pretty simple, and the Repository is already tested, I implemented the test for ViewModel, mocking the Repository, so it already covers the UseCases and the business logic inside the VM.
 
----
 
 ## Requirements
 
 - iOS 18.0+
 - Xcode 16.4+
-- Swift 5.7+
+- Swift 6.1+
 
----
 
 ## Installation
 

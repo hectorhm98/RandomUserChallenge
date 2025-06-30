@@ -42,7 +42,6 @@ let dummyUsers: [RandomUser] = [
 ]
 
 // MARK: - Preview configuration for VM
-#if DEBUG
 extension RandomUserListViewModel {
     static var preview: RandomUserListViewModel {
         let vm = RandomUserListViewModel(
@@ -54,4 +53,3 @@ extension RandomUserListViewModel {
         return vm
     }
 }
-#endif

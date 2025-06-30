@@ -1,0 +1,32 @@
+{
+  "configurations" : [
+    {
+      "id" : "579FB1BD-8B1E-47B1-92EA-92DC81EACE13",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:RandomUserChallenge.xcodeproj",
+        "identifier" : "65408D402E0C465300D91DB9",
+        "name" : "RandomUserChallengeTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:RandomUserChallenge.xcodeproj",
+        "identifier" : "654929E52E130AFF00013551",
+        "name" : "RandomUserChallengeSnapshotTests"
+      }
+    }
+  ],
+  "version" : 1
+}
