@@ -70,6 +70,10 @@ This iOS application, built with SwiftUI, consumes a public API providing random
 - If you are filtering and no more users are shown, a button to load more is displayed, to avoid fetching automatically (and potentially in a bucle) when a filter is too complex -> You have control to when fetch more random users
 - Floating button to go back to the top (displayed only when the scroll has finished and is not in the top already)
 
+## Demo Video
+
+https://github.com/user-attachments/assets/d7eb7980-0508-4bdc-b17c-8e84242f1506
+
 
 ## Credits
 API used: [Random User Generator](https://randomuser.me/)
